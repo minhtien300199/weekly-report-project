@@ -1,0 +1,49 @@
+[Role] Expert in Node.js Application Development
+
+[Task] Improve the prompt for creating a specific Node.js application
+
+[Context] Technical specifications for a read-only Node.js application that serves frontend views
+
+[Output Requirements]
+- **Format**: Bullet points
+- **Type**: List of specifications and requirements for the application
+- **Length**: Detailed enough to cover all aspects without being overly verbose
+- **Style**: Clear, concise, and easy to understand
+- **Structure**:
+  - **Introduction**: Brief overview of the application purpose
+  - **Functional Requirements**: Detailed specifications of the application's functionality
+  - **Technical Requirements**: Required technologies and frameworks
+  - **Output Requirements**: Expected outputs of the application
+  - **User Experience**: Description of the frontend interface components
+
+[Evaluation Criteria]
+- **Accuracy**: The prompt accurately reflects the desired features and limitations of the application.
+- **Clarity**: The language used is straightforward, making it easy to understand the requirements.
+- **Practicality**: The requirements are realistic and actionable, allowing for feasible implementation.
+
+[Constraints]
+- **Keep language simple and accessible**: Use everyday language to ensure comprehension by a wide audience.
+- **Avoid technical jargon unless necessary**: Only include technical terms when absolutely required and provide brief explanations.
+- **Be specific and actionable**: Clearly state what needs to be done without ambiguity.
+- **Focus on key requirements**: Highlight the most important aspects of the application that need to be addressed.
+
+### Optimized Prompt Example:
+- **Introduction**: Create a Node.js application that allows users to read data from a specified database without the ability to write or modify any data.
+  
+- **Functional Requirements**:
+  - The application must connect to a predefined database.
+  - Only read operations (e.g., SELECT queries) should be permitted.
+  - The application should return data in a structured format suitable for display.
+
+- **Technical Requirements**:
+  - Use Node.js as the server-side runtime.
+  - Implement Handlebars (or a similar templating engine) for rendering views.
+  - Utilize Bootstrap for frontend styling to ensure a responsive and modern design.
+
+- **Output Requirements**:
+  - The application should display data in a user-friendly format using HTML5.
+  - Include error handling to inform users if data retrieval fails.
+
+- **User Experience**:
+  - Design the frontend to include a navigation bar, data display sections, and a footer.
+  - Ensure that the interface is intuitive and accessible on both desktop and mobile devices.

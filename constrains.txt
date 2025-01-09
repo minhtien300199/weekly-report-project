@@ -1,0 +1,20 @@
+Frontend:
+- Use html, css
+- CSS can be used bootstrap or tailwindcss
+- Use javascript
+- Use jquery
+- Use ajax
+- Use handlebars
+
+Backend:
+- Use node.js
+- Use express
+- Use mysql
+- Use cors
+- Use dotenv
+
+Constraints:
+- Consistent Code
+- Do not remove any running or old code that already work
+- Do not replace any running or old code that already work
+- Do not remove comment code or explain code

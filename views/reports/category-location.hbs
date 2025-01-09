@@ -1,0 +1,55 @@
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title mb-4">Category Location Report</h2>
+        <table id="dataTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Category ID</th>
+                    <th>Friendly URL</th>
+                    <th>Location URL</th>
+                    <th>Location Name</th>
+                    <th>Last Modified</th>
+                    <th>Total Profile</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+{{#section 'scripts'}}
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            ajax: {
+                url: '/api/location-category-data',
+                type: 'GET',
+                error: function(xhr, error, thrown) {
+                    console.error('DataTables error:', error);
+                    console.error('Details:', thrown);
+                }
+            },
+            processing: true,
+            serverSide: false,
+            columns: [
+                { data: 'CategoryId' },
+                { data: 'FriendlyUrl' },
+                { data: 'LocationUrl' },
+                { data: 'LocationName' },
+                { data: 'lastmod' },
+                { data: 'TotalProfile' }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: 'Export to Excel',
+                    className: 'btn btn-success',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                }
+            ]
+        });
+    });
+</script>
+{{/section}} 
