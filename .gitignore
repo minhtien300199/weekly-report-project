@@ -60,4 +60,7 @@ Thumbs.db
 
 # SQL Queries
 queries/
-*.sql 
+*.sql
+
+# Import templates
+import-templates/ 
