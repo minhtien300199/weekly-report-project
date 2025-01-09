@@ -13,40 +13,188 @@
             </div>
         </div>
 
-        <table id="gscTable" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Query</th>
-                    <th>Page</th>
-                    <th>Device</th>
-                    <th>Country</th>
-                    <th>Clicks</th>
-                    <th>Impressions</th>
-                    <th>CTR</th>
-                    <th>Position</th>
-                </tr>
-            </thead>
-        </table>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Top 10 Keywords by Impressions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="keywordsTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Keyword</th>
+                                        <th>Impressions</th>
+                                        <th>Clicks</th>
+                                        <th>CTR</th>
+                                        <th>Position</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Top 10 Pages by Clicks</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="pagesTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Page</th>
+                                        <th>Clicks</th>
+                                        <th>Impressions</th>
+                                        <th>CTR</th>
+                                        <th>Position</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Compare Impression Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Period 1:</label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="period1Start">
+                                    <input type="date" class="form-control" id="period1End">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Period 2:</label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="period2Start">
+                                    <input type="date" class="form-control" id="period2End">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="btn btn-primary" id="compareData">Compare Periods</button>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 {{#section 'scripts'}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* Custom styles for tables */
+    .table {
+        width: 100%;
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Adjust column widths */
+    #pagesTable th:first-child,
+    #keywordsTable th:first-child {
+        min-width: 200px;
+    }
+    
+    #pagesTable th:not(:first-child),
+    #keywordsTable th:not(:first-child) {
+        min-width: 80px;
+    }
+    
+    /* Make tables more compact */
+    .table td, .table th {
+        padding: 0.5rem;
+    }
+    
+    /* Ensure export buttons don't overflow */
+    .dt-buttons {
+        margin-bottom: 0.5rem;
+    }
+</style>
 <script>
     $(document).ready(function() {
-        const table = $('#gscTable').DataTable({
-            processing: true,
-            serverSide: false,
+        // Set default dates for all date inputs
+        function setDefaultDates() {
+            const today = new Date();
+            
+            // For main tables (last 28 days)
+            const startDate = new Date(today);
+            startDate.setDate(today.getDate() - 28);
+            $('#startDate').val(startDate.toISOString().split('T')[0]);
+            $('#endDate').val(today.toISOString().split('T')[0]);
+            
+            // For comparison (last month vs current month)
+            const firstDayThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDayThisMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            const firstDayLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            const lastDayLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+
+            $('#period1Start').val(firstDayLastMonth.toISOString().split('T')[0]);
+            $('#period1End').val(lastDayLastMonth.toISOString().split('T')[0]);
+            $('#period2Start').val(firstDayThisMonth.toISOString().split('T')[0]);
+            $('#period2End').val(lastDayThisMonth.toISOString().split('T')[0]);
+        }
+
+        // Set default dates before initializing tables
+        setDefaultDates();
+
+        const keywordsTable = $('#keywordsTable').DataTable({
+            scrollX: true,
+            autoWidth: false,
+            dom: 'Bfrtip',
+            order: [[1, 'desc']],
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: 'Export to Excel',
+                    className: 'btn btn-success btn-sm',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                }
+            ],
+            pageLength: 10,
             columns: [
-                { data: 'keys.0' },  // query
-                { data: 'keys.1' },  // page
-                { data: 'keys.2' },  // device
-                { data: 'keys.3' },  // country
-                { data: 'clicks' },
-                { data: 'impressions' },
+                { data: 'keys.0' },
                 { 
-                    data: null,
+                    data: 'impressions',
+                    type: 'num'
+                },
+                { data: 'clicks' },
+                { 
+                    data: 'ctr',
                     render: function(data) {
-                        return ((data.ctr * 100).toFixed(2) + '%');
+                        return (data * 100).toFixed(2) + '%';
                     }
                 },
                 { 
@@ -55,15 +203,42 @@
                         return data.toFixed(1);
                     }
                 }
-            ],
+            ]
+        });
+
+        const pagesTable = $('#pagesTable').DataTable({
+            scrollX: true,
+            autoWidth: false,
             dom: 'Bfrtip',
+            order: [[1, 'desc']],
             buttons: [
                 {
                     extend: 'excel',
                     text: 'Export to Excel',
-                    className: 'btn btn-success',
+                    className: 'btn btn-success btn-sm',
                     exportOptions: {
                         columns: ':visible'
+                    }
+                }
+            ],
+            pageLength: 10,
+            columns: [
+                { data: 'keys.0' },
+                { 
+                    data: 'clicks',
+                    type: 'num'
+                },
+                { data: 'impressions' },
+                { 
+                    data: 'ctr',
+                    render: function(data) {
+                        return (data * 100).toFixed(2) + '%';
+                    }
+                },
+                { 
+                    data: 'position',
+                    render: function(data) {
+                        return data.toFixed(1);
                     }
                 }
             ]
@@ -72,17 +247,196 @@
         $('#fetchData').click(function() {
             const startDate = $('#startDate').val();
             const endDate = $('#endDate').val();
+            const fetchButton = $(this);
 
-            table.ajax.url(`/api/gsc-data?startDate=${startDate}&endDate=${endDate}`).load();
+            // Validate dates before fetching
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+
+            // Disable button while fetching
+            fetchButton.prop('disabled', true);
+            fetchButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...');
+
+            // Create promises for both requests
+            const keywordsPromise = $.get(`/api/gsc-data?type=keywords&startDate=${startDate}&endDate=${endDate}`);
+            const pagesPromise = $.get(`/api/gsc-data?type=pages&startDate=${startDate}&endDate=${endDate}`);
+
+            // Wait for both requests to complete
+            Promise.all([keywordsPromise, pagesPromise])
+                .then(([keywordsResponse, pagesResponse]) => {
+                    // Update both tables
+                    keywordsTable.clear().rows.add(keywordsResponse.data).draw();
+                    pagesTable.clear().rows.add(pagesResponse.data).draw();
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    alert('Error fetching data. Please try again.');
+                })
+                .finally(() => {
+                    // Re-enable button
+                    fetchButton.prop('disabled', false);
+                    fetchButton.html('Fetch Data');
+                });
         });
 
-        // Set default date range (last 28 days)
-        const today = new Date();
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 28);
+        // Initialize comparison chart
+        let comparisonChart = null;
 
-        $('#startDate').val(startDate.toISOString().split('T')[0]);
-        $('#endDate').val(today.toISOString().split('T')[0]);
+        function initChart(data) {
+            if (comparisonChart) {
+                comparisonChart.destroy();
+            }
+
+            // Calculate the number of days in each period
+            const period1Days = data.period1.length;
+            const period2Days = data.period2.length;
+            const maxDays = Math.max(period1Days, period2Days);
+            
+            // Create labels for days (Day 1, Day 2, etc.)
+            const labels = Array.from({length: maxDays}, (_, i) => `Day ${i + 1}`);
+            
+            // Sort data by date for each period
+            data.period1.sort((a, b) => new Date(a.date) - new Date(b.date));
+            data.period2.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Format date for tooltip
+            const formatDate = (dateStr) => {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric',
+                    month: 'short', 
+                    day: 'numeric'
+                });
+            };
+
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            comparisonChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Period 1 - Impressions',
+                            data: data.period1.map((d, i) => ({
+                                x: `Day ${i + 1}`,
+                                y: d.impressions,
+                                date: formatDate(d.date)
+                            })),
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Period 2 - Impressions',
+                            data: data.period2.map((d, i) => ({
+                                x: `Day ${i + 1}`,
+                                y: d.impressions,
+                                date: formatDate(d.date)
+                            })),
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Impressions Comparison',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    const dataPoint = context.raw;
+                                    return [
+                                        `${context.dataset.label}: ${dataPoint.y.toLocaleString()}`,
+                                        `Date: ${dataPoint.date}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Day Number'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Impressions'
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        $('#compareData').click(function() {
+            const period1Start = $('#period1Start').val();
+            const period1End = $('#period1End').val();
+            const period2Start = $('#period2Start').val();
+            const period2End = $('#period2End').val();
+
+            // Validate dates before comparing
+            if (!period1Start || !period1End || !period2Start || !period2End) {
+                alert('Please select dates for both periods');
+                return;
+            }
+
+            const compareButton = $(this);
+            compareButton.prop('disabled', true);
+            compareButton.html('<span class="spinner-border spinner-border-sm"></span> Comparing...');
+
+            // Fetch data for both periods
+            Promise.all([
+                $.get(`/api/gsc-data?type=comparison&startDate=${period1Start}&endDate=${period1End}`),
+                $.get(`/api/gsc-data?type=comparison&startDate=${period2Start}&endDate=${period2End}`)
+            ])
+            .then(([period1Data, period2Data]) => {
+                initChart({
+                    period1: period1Data.data,
+                    period2: period2Data.data
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching comparison data:', error);
+                alert('Error comparing periods. Please try again.');
+            })
+            .finally(() => {
+                compareButton.prop('disabled', false);
+                compareButton.html('Compare Periods');
+            });
+        });
+
+        // Initial load
+        setTimeout(() => {
+            $('#fetchData').click();
+        }, 100);
     });
 </script>
 {{/section}} 

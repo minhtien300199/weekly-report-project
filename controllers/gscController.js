@@ -6,7 +6,6 @@ class GSCController {
         try {
             res.render('reports/gsc-report');
 
-            // Log the report access
             const logger = new LoggingService();
             await logger.logActivity('report_access', {
                 report: 'gsc-report',
@@ -20,25 +19,29 @@ class GSCController {
 
     async getGSCData(req, res) {
         try {
-            const { startDate, endDate } = req.query;
+            const { startDate, endDate, type } = req.query;
             const gscService = new GSCService();
-            const results = await gscService.getSearchAnalytics(startDate, endDate);
+
+            let data;
+            if (type === 'keywords') {
+                data = await gscService.getTopKeywords(startDate, endDate);
+            } else if (type === 'pages') {
+                data = await gscService.getTopPages(startDate, endDate);
+            } else if (type === 'comparison') {
+                data = await gscService.getComparisonData(startDate, endDate);
+            } else {
+                throw new Error('Invalid data type requested');
+            }
 
             res.json({
-                draw: parseInt(req.query.draw) || 1,
-                recordsTotal: results.length,
-                recordsFiltered: results.length,
-                data: results
+                success: true,
+                data
             });
         } catch (error) {
             console.error('Error fetching GSC data:', error);
             res.status(500).json({
-                error: 'Internal server error',
-                details: error.message,
-                draw: parseInt(req.query.draw) || 1,
-                recordsTotal: 0,
-                recordsFiltered: 0,
-                data: []
+                success: false,
+                error: error.message
             });
         }
     }
