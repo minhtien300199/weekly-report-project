@@ -13,8 +13,15 @@ Backend:
 - Use cors
 - Use dotenv
 
+Database:
+- Use mysql2
+- Use mysql
+- Read-only Database only for read data
+- Read-Write Database (Local/Development) that can read/write data
+
 Constraints:
 - Consistent Code
 - Do not remove any running or old code that already work
 - Do not replace any running or old code that already work
 - Do not remove comment code or explain code
+- Read-only Database only for read data
