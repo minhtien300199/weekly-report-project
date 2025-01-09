@@ -36,6 +36,9 @@ const hbs = exphbs.create({
             if (!this._sections) this._sections = {};
             this._sections[name] = options.fn(this);
             return null;
+        },
+        eq: function (v1, v2) {
+            return v1 === v2;
         }
     }
 });
@@ -43,6 +46,12 @@ const hbs = exphbs.create({
 app.engine('.hbs', hbs.engine);
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Middleware to add currentRoute to all views
+app.use((req, res, next) => {
+    res.locals.currentRoute = req.path;
+    next();
+});
 
 // Routes
 app.use('/', routes);

@@ -5,6 +5,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.25rem;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -16,13 +22,15 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link {{#if (eq currentRoute '/')}}active{{/if}}" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/category-location-report">Category Location Report</a>
+                        <a class="nav-link {{#if (eq currentRoute '/category-location-report')}}active{{/if}}" 
+                           href="/category-location-report">Category Location Report</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/gsc-report">GSC Report</a>
+                        <a class="nav-link {{#if (eq currentRoute '/gsc-report')}}active{{/if}}" 
+                           href="/gsc-report">GSC Report</a>
                     </li>
                 </ul>
             </div>
