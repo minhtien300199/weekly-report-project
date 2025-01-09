@@ -1,5 +1,6 @@
 const path = require('path');
 const db = require('../config/database');
+const { ActivityLog } = require('../models');
 
 class CategoryLocationService {
     async getReportData() {
@@ -20,12 +21,14 @@ class CategoryLocationService {
 
 class LoggingService {
     async logActivity(action, details) {
-        const connection = await db.getReadWriteConnection();
         try {
-            const query = 'INSERT INTO activity_logs (action, details, created_at) VALUES (?, ?, NOW())';
-            await connection.execute(query, [action, JSON.stringify(details)]);
-        } finally {
-            await connection.end();
+            await ActivityLog.create({
+                action,
+                details: JSON.stringify(details)
+            });
+        } catch (error) {
+            console.error('Error logging activity:', error);
+            throw error;
         }
     }
 }

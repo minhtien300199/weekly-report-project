@@ -1,0 +1,88 @@
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title mb-4">Google Search Console Report</h2>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text">Date Range</span>
+                    <input type="date" class="form-control" id="startDate">
+                    <input type="date" class="form-control" id="endDate">
+                    <button class="btn btn-primary" id="fetchData">Fetch Data</button>
+                </div>
+            </div>
+        </div>
+
+        <table id="gscTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Query</th>
+                    <th>Page</th>
+                    <th>Device</th>
+                    <th>Country</th>
+                    <th>Clicks</th>
+                    <th>Impressions</th>
+                    <th>CTR</th>
+                    <th>Position</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+{{#section 'scripts'}}
+<script>
+    $(document).ready(function() {
+        const table = $('#gscTable').DataTable({
+            processing: true,
+            serverSide: false,
+            columns: [
+                { data: 'keys.0' },  // query
+                { data: 'keys.1' },  // page
+                { data: 'keys.2' },  // device
+                { data: 'keys.3' },  // country
+                { data: 'clicks' },
+                { data: 'impressions' },
+                { 
+                    data: null,
+                    render: function(data) {
+                        return ((data.ctr * 100).toFixed(2) + '%');
+                    }
+                },
+                { 
+                    data: 'position',
+                    render: function(data) {
+                        return data.toFixed(1);
+                    }
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: 'Export to Excel',
+                    className: 'btn btn-success',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                }
+            ]
+        });
+
+        $('#fetchData').click(function() {
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            table.ajax.url(`/api/gsc-data?startDate=${startDate}&endDate=${endDate}`).load();
+        });
+
+        // Set default date range (last 28 days)
+        const today = new Date();
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() - 28);
+
+        $('#startDate').val(startDate.toISOString().split('T')[0]);
+        $('#endDate').val(today.toISOString().split('T')[0]);
+    });
+</script>
+{{/section}} 
