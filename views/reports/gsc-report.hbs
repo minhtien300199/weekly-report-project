@@ -78,13 +78,9 @@
                                 <h6>Performance Highlights</h6>
                                 <ul class="list-unstyled" id="periodAnalysis">
                                     <li>Highest Impressions: <span class="text-primary" id="maxImp">-</span></li>
-                                    <li>On Date: <span class="text-muted" id="maxImpDate">-</span></li>
                                     <li>Lowest Impressions: <span class="text-primary" id="minImp">-</span></li>
-                                    <li>On Date: <span class="text-muted" id="minImpDate">-</span></li>
                                     <li>Highest Clicks: <span class="text-primary" id="maxClick">-</span></li>
-                                    <li>On Date: <span class="text-muted" id="maxClickDate">-</span></li>
                                     <li>Lowest Clicks: <span class="text-primary" id="minClick">-</span></li>
-                                    <li>On Date: <span class="text-muted" id="minClickDate">-</span></li>
                                     <li>Total Impressions: <span class="text-primary" id="totalImp">-</span></li>
                                     <li>Total Clicks: <span class="text-primary" id="totalClick">-</span></li>
                                     <li>Average Position: <span class="text-primary" id="avgPosition">-</span></li>
@@ -164,31 +160,21 @@
                                             <div class="col-md-6">
                                                 <h6>Period 1 Highlights</h6>
                                                 <ul class="list-unstyled" id="period1Analysis">
-                                                    <li>Highest Impressions: <span class="text-primary" id="p1MaxImp">-</span></li>
-                                                    <li>On Date: <span class="text-muted" id="p1MaxImpDate">-</span></li>
-                                                    <li>Lowest Impressions: <span class="text-primary" id="p1MinImp">-</span></li>
-                                                    <li>On Date: <span class="text-muted" id="p1MinImpDate">-</span></li>
-                                                    <li>Highest Clicks: <span class="text-primary" id="p1MaxClick">-</span></li>
-                                                    <li>On Date: <span class="text-muted" id="p1MaxClickDate">-</span></li>
-                                                    <li>Lowest Clicks: <span class="text-primary" id="p1MinClick">-</span></li>
-                                                    <li>On Date: <span class="text-muted" id="p1MinClickDate">-</span></li>
+                                                    <li>Highest Impressions: <span class="text-primary" id="p1MaxImp">-</span> (<span class="text-muted" id="p1MaxImpDate">-</span>)</li>
+                                                    <li>Lowest Impressions: <span class="text-primary" id="p1MinImp">-</span> (<span class="text-muted" id="p1MinImpDate">-</span>)</li>
+                                                    <li>Highest Clicks: <span class="text-primary" id="p1MaxClick">-</span> (<span class="text-muted" id="p1MaxClickDate">-</span>)</li>
+                                                    <li>Lowest Clicks: <span class="text-primary" id="p1MinClick">-</span> (<span class="text-muted" id="p1MinClickDate">-</span>)</li>
                                                     <li>Total Impressions: <span class="text-primary" id="p1TotalImp">-</span></li>
-                                                    <li>Total Clicks: <span class="text-primary" id="p1TotalClick">-</span></li>
                                                 </ul>
                                             </div>
                                             <div class="col-md-6">
                                                 <h6>Period 2 Highlights</h6>
                                                 <ul class="list-unstyled" id="period2Analysis">
-                                                    <li>Highest Impressions: <span class="text-primary" id="p2MaxImp">-</span></li>
-                                                    <li>On Date: <span class="text-muted" id="p2MaxImpDate">-</span></li>
-                                                    <li>Lowest Impressions: <span class="text-primary" id="p2MinImp">-</span></li>
-                                                    <li>On Date: <span class="text-muted" id="p2MinImpDate">-</span></li>
-                                                    <li>Highest Clicks: <span class="text-primary" id="p2MaxClick">-</span></li>
-                                                    <li>On Date: <span class="text-muted" id="p2MaxClickDate">-</span></li>
-                                                    <li>Lowest Clicks: <span class="text-primary" id="p2MinClick">-</span></li>
-                                                    <li>On Date: <span class="text-muted" id="p2MinClickDate">-</span></li>
+                                                    <li>Highest Impressions: <span class="text-primary" id="p2MaxImp">-</span> (<span class="text-muted" id="p2MaxImpDate">-</span>)</li>
+                                                    <li>Lowest Impressions: <span class="text-primary" id="p2MinImp">-</span> (<span class="text-muted" id="p2MinImpDate">-</span>)</li>
+                                                    <li>Highest Clicks: <span class="text-primary" id="p2MaxClick">-</span> (<span class="text-muted" id="p2MaxClickDate">-</span>)</li>
+                                                    <li>Lowest Clicks: <span class="text-primary" id="p2MinClick">-</span> (<span class="text-muted" id="p2MinClickDate">-</span>)</li>
                                                     <li>Total Impressions: <span class="text-primary" id="p2TotalImp">-</span></li>
-                                                    <li>Total Clicks: <span class="text-primary" id="p2TotalClick">-</span></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -538,13 +524,9 @@
             
             // Update the UI
             $('#maxImp').text(Math.round(maxImp.impressions).toLocaleString());
-            $('#maxImpDate').text(endDate);
             $('#minImp').text(Math.round(minImp.impressions).toLocaleString());
-            $('#minImpDate').text(startDate);
             $('#maxClick').text(Math.round(maxClick.clicks).toLocaleString());
-            $('#maxClickDate').text(endDate);
             $('#minClick').text(Math.round(minClick.clicks).toLocaleString());
-            $('#minClickDate').text(startDate);
             $('#totalImp').text(Math.round(totalImp).toLocaleString());
             $('#totalClick').text(Math.round(totalClick).toLocaleString());
             $('#avgPosition').text(avgPosition.toFixed(1));
