@@ -33,5 +33,6 @@ router.post('/api/semrush/position-changes', upload.single('file'), semrushContr
 // DataForSEO Routes
 router.get('/dataforseo-report', dataForSeoController.showReport);
 router.post('/api/dataforseo/serp', dataForSeoController.getSerps);
+router.get('/api/dataforseo/user', dataForSeoController.getUserInfo);
 
 module.exports = router; 

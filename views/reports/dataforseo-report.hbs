@@ -1,6 +1,21 @@
 <div class="card">
     <div class="card-body">
-        <h2 class="card-title mb-4">DataForSEO Tool</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="card-title mb-0">DataForSEO Tool</h2>
+            <div id="userInfo" class="text-end" style="display: none;">
+                <div class="d-flex align-items-center justify-content-end gap-2">
+                    <button id="refreshBalance" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <div class="text-muted">
+                        <small>User: <span id="userName">-</span></small>
+                    </div>
+                    <div class="text-muted">
+                        <small>Balance: <span id="userBalance">-</span> credits</small>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div class="card">
             <div class="card-header">
@@ -106,6 +121,15 @@
 
 {{#section 'scripts'}}
 <style>
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .bi-arrow-clockwise-animate {
+        animation: spin 1s linear infinite;
+    }
+    
     .loading-overlay {
         position: fixed;
         top: 0;
@@ -133,6 +157,62 @@
 </style>
 <script>
     $(document).ready(function() {
+        // Auto refresh interval (5 minutes)
+        const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000;
+        let autoRefreshTimer;
+
+        // Fetch user info
+        function loadUserInfo() {
+            // Show loading state on refresh button
+            $('#refreshBalance').prop('disabled', true)
+                .find('i').addClass('bi-arrow-clockwise-animate');
+
+            $.ajax({
+                url: '/api/dataforseo/user',
+                method: 'GET',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        $('#userName').text(response.data.login || '-');
+                        $('#userBalance').text(response.data.balance?.toLocaleString() || '0');
+                        $('#userInfo').show();
+                    }
+                },
+                error: function(error) {
+                    console.error('Error fetching user info:', error);
+                },
+                complete: function() {
+                    // Reset loading state
+                    $('#refreshBalance').prop('disabled', false)
+                        .find('i').removeClass('bi-arrow-clockwise-animate');
+                }
+            });
+        }
+
+        // Setup auto refresh
+        function setupAutoRefresh() {
+            if (autoRefreshTimer) {
+                clearInterval(autoRefreshTimer);
+            }
+            autoRefreshTimer = setInterval(loadUserInfo, AUTO_REFRESH_INTERVAL);
+        }
+
+        // Handle manual refresh click
+        $('#refreshBalance').click(function() {
+            loadUserInfo();
+            setupAutoRefresh(); // Reset auto refresh timer
+        });
+
+        // Load user info when page loads
+        loadUserInfo();
+        setupAutoRefresh();
+
+        // Clear interval when leaving page
+        $(window).on('unload', function() {
+            if (autoRefreshTimer) {
+                clearInterval(autoRefreshTimer);
+            }
+        });
+
         // Update OS options based on device selection
         $('#device').change(function() {
             const device = $(this).val();

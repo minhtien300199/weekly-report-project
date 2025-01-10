@@ -7,6 +7,7 @@ class DataForSeoController {
         this.getSerps = this.getSerps.bind(this);
         this.getTaskResults = this.getTaskResults.bind(this);
         this.waitForRateLimit = this.waitForRateLimit.bind(this);
+        this.getUserInfo = this.getUserInfo.bind(this);
     }
 
     async showReport(req, res) {
@@ -221,6 +222,43 @@ class DataForSeoController {
                 stack: error.stack
             });
             throw error;
+        }
+    }
+
+    async getUserInfo(req, res) {
+        try {
+            const username = process.env.DATAFORSEO_LOGIN;
+            const password = process.env.DATAFORSEO_API_KEY;
+            const auth = Buffer.from(`${username}:${password}`).toString('base64');
+
+            const response = await axios.get(
+                'https://api.dataforseo.com/v3/appendix/user_data',
+                {
+                    headers: {
+                        'Authorization': `Basic ${auth}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (response.data?.status_code === 20000) {
+                const userData = response.data?.tasks?.[0]?.result?.[0];
+                res.json({
+                    success: true,
+                    data: {
+                        login: userData?.login,
+                        balance: userData?.money?.balance
+                    }
+                });
+            } else {
+                throw new Error('Invalid API response');
+            }
+        } catch (error) {
+            console.error('Error getting user info:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
         }
     }
 }
