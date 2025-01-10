@@ -15,6 +15,12 @@
                                    placeholder="Enter keyword (max 700 chars)">
                             <div class="form-text">You can use special parameters like 'site:', 'inurl:', etc.</div>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Domain to Track (optional)</label>
+                            <input type="text" class="form-control" id="trackDomain" 
+                                   placeholder="e.g., example.com">
+                            <div class="form-text">Enter domain without http/https or www</div>
+                        </div>
                         <div class="col-md-3">
                             <label class="form-label">Language Code</label>
                             <input type="text" class="form-control" id="languageCode" value="en">
@@ -66,6 +72,9 @@
 
                 <div id="results" class="mt-4" style="display: none;">
                     <h5>Search Results</h5>
+                    <div id="domainPosition" class="alert alert-info mb-3" style="display: none;">
+                        <strong>Domain Position:</strong> <span id="domainPositionText"></span>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-sm" id="resultsTable">
                             <thead>
@@ -113,6 +122,14 @@
         width: 4rem;
         height: 4rem;
     }
+    #domainPosition {
+        margin-top: 1rem;
+        padding: 0.75rem 1.25rem;
+    }
+    .table-primary {
+        --bs-table-bg: rgba(13, 110, 253, 0.1);
+        --bs-table-striped-bg: rgba(13, 110, 253, 0.15);
+    }
 </style>
 <script>
     $(document).ready(function() {
@@ -136,6 +153,7 @@
             
             const formData = {
                 keyword: $('#keyword').val().trim(),
+                domain_to_track: $('#trackDomain').val().trim(),
                 language_code: $('#languageCode').val(),
                 location_code: parseInt($('#locationCode').val()),
                 device: $('#device').val(),
@@ -188,11 +206,34 @@
             
             if (!Array.isArray(data) || data.length === 0) {
                 $('#resultsTableBody').html('<tr><td colspan="6" class="text-center">No results found</td></tr>');
+                $('#domainPosition').hide();
                 return;
             }
             
+            // Check for tracked domain position
+            const domainToTrack = $('#trackDomain').val().trim().toLowerCase();
+            if (domainToTrack) {
+                const domainPosition = data.findIndex(item => 
+                    item.domain?.toLowerCase() === domainToTrack
+                ) + 1;
+                
+                if (domainPosition > 0) {
+                    $('#domainPositionText').text(
+                        `Found "${domainToTrack}" at position ${domainPosition} for keyword "${$('#keyword').val().trim()}"`
+                    );
+                    $('#domainPosition').show();
+                } else {
+                    $('#domainPositionText').text(
+                        `Domain "${domainToTrack}" not found in the search results`
+                    );
+                    $('#domainPosition').show();
+                }
+            } else {
+                $('#domainPosition').hide();
+            }
+            
             const tableHtml = data.map(item => `
-                <tr>
+                <tr ${domainToTrack && item.domain?.toLowerCase() === domainToTrack ? 'class="table-primary"' : ''}>
                     <td>${item.rank_group || item.rank_position || '-'}</td>
                     <td>${item.type || '-'}</td>
                     <td>${item.title || '-'}</td>
