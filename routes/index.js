@@ -3,6 +3,7 @@ const router = express.Router();
 const categoryLocationController = require('../controllers/categoryLocationController');
 const gscController = require('../controllers/gscController');
 const semrushController = require('../controllers/semrushController');
+const dataForSeoController = require('../controllers/dataForSeoController');
 const multer = require('multer');
 
 // Configure multer for memory storage
@@ -28,5 +29,9 @@ router.get('/api/gsc-data', gscController.getGSCData);
 router.get('/semrush-report', semrushController.showReport);
 router.post('/api/semrush/position-analysis', upload.single('file'), semrushController.analyzePositionData);
 router.post('/api/semrush/position-changes', upload.single('file'), semrushController.analyzePositionChanges);
+
+// DataForSEO Routes
+router.get('/dataforseo-report', dataForSeoController.showReport);
+router.post('/api/dataforseo/serp', dataForSeoController.getSerps);
 
 module.exports = router; 
