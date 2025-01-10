@@ -1,0 +1,541 @@
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title mb-4">Semrush Position Analysis</h2>
+
+        <!-- Position Analysis Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Position Analysis</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="positionFile" class="form-label">Upload Position Data</label>
+                    <div class="input-group">
+                        <input type="file" class="form-control" id="positionFile" accept=".xlsx,.xls">
+                        <button class="btn btn-primary" id="analyzePosition">Analyze</button>
+                    </div>
+                    <div class="form-text">
+                        Download template: <a href="/templates/semrush-position-template.xlsx">semrush-position-template.xlsx</a>
+                    </div>
+                </div>
+                <div id="positionAnalysis" class="mt-4" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Position Distribution</h6>
+                            <canvas id="positionChart"></canvas>
+                            <div class="mt-4">
+                                <h6>Keywords with Traffic</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm" id="trafficKeywordsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Keyword</th>
+                                                <th>Position</th>
+                                                <th>Traffic</th>
+                                                <th>Search Volume</th>
+                                                <th>Traffic %</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="trafficKeywordsList">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Position Summary</h6>
+                            <div class="position-summary">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>Top 3 Keywords:</td>
+                                            <td id="top3Count">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Position 4-10:</td>
+                                            <td id="top10Count">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Position 11-20:</td>
+                                            <td id="top20Count">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Position 21-50:</td>
+                                            <td id="top50Count">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Position 51-100:</td>
+                                            <td id="top100Count">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Average Position:</td>
+                                            <td id="avgPosition">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Analysis</h6>
+                                <button class="btn btn-primary btn-sm" id="getAIAnalysis">
+                                    Get AI Analysis
+                                </button>
+                            </div>
+                            <div id="positionInsights" class="analysis-box"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Position Changes Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Position Changes Analysis</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="changesFile" class="form-label">Upload Position Changes Data</label>
+                    <div class="input-group">
+                        <input type="file" class="form-control" id="changesFile" accept=".xlsx,.xls">
+                        <button class="btn btn-primary" id="analyzeChanges">Analyze</button>
+                    </div>
+                    <div class="form-text">
+                        Download template: <a href="/templates/position-change-template.xlsx">position-change-template.xlsx</a>
+                    </div>
+                </div>
+                <div id="changesAnalysis" class="mt-4" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Changes Distribution</h6>
+                            <canvas id="changesChart"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="changes-summary">
+                                <h6>Position Changes Summary</h6>
+                                <div class="date-range mb-2 text-muted">
+                                    <small>Date Range: <span id="dateRange">-</span></small>
+                                </div>
+                                <div class="mb-3">
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td>Total Keywords:</td>
+                                                <td id="totalKeywords">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Improved Keywords:</td>
+                                                <td class="text-success" id="improvedKeywords">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Declined Keywords:</td>
+                                                <td class="text-danger" id="declinedKeywords">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Unchanged Keywords:</td>
+                                                <td id="unchangedKeywords">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Average Change:</td>
+                                                <td id="averageChange">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Traffic Increased:</td>
+                                                <td class="text-success" id="trafficIncreased">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Traffic Decreased:</td>
+                                                <td class="text-danger" id="trafficDecreased">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Traffic Change:</td>
+                                                <td id="totalTrafficChange">-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mb-3">
+                                    <h6 class="text-success">Top Improvements</h6>
+                                    <div id="topImprovements" class="small-table-container"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <h6 class="text-danger">Biggest Drops</h6>
+                                    <div id="biggestDrops" class="small-table-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Analysis</h6>
+                                <button class="btn btn-primary btn-sm" id="getChangesAIAnalysis">
+                                    Get AI Analysis
+                                </button>
+                            </div>
+                            <div id="changesInsights" class="analysis-box"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="spinner-border loading-spinner text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+{{#section 'scripts'}}
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .analysis-box {
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        height: 300px;
+        overflow-y: auto;
+    }
+    .small-table-container {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+    }
+    .position-summary table {
+        font-size: 0.9rem;
+    }
+    .changes-summary table {
+        font-size: 0.85rem;
+    }
+    .date-range {
+        font-size: 0.9rem;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.5rem;
+    }
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    .loading-spinner {
+        width: 4rem;
+        height: 4rem;
+    }
+    #trafficKeywordsTable {
+        font-size: 0.85rem;
+    }
+    #trafficKeywordsTable_wrapper .dataTables_length,
+    #trafficKeywordsTable_wrapper .dataTables_filter {
+        font-size: 0.9rem;
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        let positionChart = null;
+        let changesChart = null;
+
+        // Handle position data analysis
+        $('#analyzePosition').click(function() {
+            const file = $('#positionFile')[0].files[0];
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+
+            // Show loading overlay
+            $('#loadingOverlay').show();
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Send file for analysis
+            $.ajax({
+                url: '/api/semrush/position-analysis',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        displayPositionAnalysis(response.data, response.analysis);
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    alert('Error analyzing data');
+                },
+                complete: function() {
+                    // Hide loading overlay
+                    $('#loadingOverlay').hide();
+                }
+            });
+        });
+
+        // Handle position changes analysis
+        $('#analyzeChanges').click(function() {
+            const file = $('#changesFile')[0].files[0];
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+
+            // Show loading overlay
+            $('#loadingOverlay').show();
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Send file for analysis
+            $.ajax({
+                url: '/api/semrush/position-changes',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        displayChangesAnalysis(response.data, response.analysis);
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    alert('Error analyzing data');
+                },
+                complete: function() {
+                    // Hide loading overlay
+                    $('#loadingOverlay').hide();
+                }
+            });
+        });
+
+        function displayPositionAnalysis(data, analysis) {
+            $('#positionAnalysis').show();
+            // Update summary counts
+            $('#top3Count').text(data.positionRanges.top3);
+            $('#top10Count').text(data.positionRanges.top10);
+            $('#top20Count').text(data.positionRanges.top20);
+            $('#top50Count').text(data.positionRanges.top50);
+            $('#top100Count').text(data.positionRanges.top100);
+            $('#avgPosition').text(data.averagePosition.toFixed(2));
+
+            // Populate traffic keywords table
+            const trafficKeywordsHtml = data.trafficKeywords.map(k => `
+                <tr>
+                    <td>${k.keyword}</td>
+                    <td>${k.position}</td>
+                    <td>${Math.round(k.traffic).toLocaleString()}</td>
+                    <td>${k.searchVolume?.toLocaleString() || '-'}</td>
+                    <td>${k.trafficPercent?.toFixed(2) || '-'}%</td>
+                </tr>
+            `).join('');
+            $('#trafficKeywordsList').html(trafficKeywordsHtml);
+
+            // Initialize DataTable for better table functionality
+            if ($.fn.DataTable.isDataTable('#trafficKeywordsTable')) {
+                $('#trafficKeywordsTable').DataTable().destroy();
+            }
+            $('#trafficKeywordsTable').DataTable({
+                pageLength: 10,
+                order: [[2, 'desc']], // Sort by traffic column by default
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip'
+            });
+
+            // Initialize without AI analysis
+            $('#positionInsights').html('Click "Get AI Analysis" for detailed insights');
+
+            if (positionChart) {
+                positionChart.destroy();
+            }
+
+            const ctx = document.getElementById('positionChart').getContext('2d');
+            positionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1-3', '4-10', '11-20', '21-50', '51-100'],
+                    datasets: [{
+                        label: 'Keywords Count',
+                        data: [
+                            data.positionRanges.top3,
+                            data.positionRanges.top10,
+                            data.positionRanges.top20,
+                            data.positionRanges.top50,
+                            data.positionRanges.top100
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayChangesAnalysis(data, analysis) {
+            $('#changesAnalysis').show();
+           
+            // Display date range
+            $('#dateRange').text(
+                data.dateRange.from === data.dateRange.to ? 
+                data.dateRange.from : 
+                `${data.dateRange.from} - ${data.dateRange.to}`
+            );
+
+            // Update summary statistics
+            $('#totalKeywords').text(data.summary.totalKeywords);
+            $('#improvedKeywords').text(data.summary.improvedKeywords);
+            $('#declinedKeywords').text(data.summary.declinedKeywords);
+            $('#unchangedKeywords').text(data.summary.unchangedKeywords);
+            $('#averageChange').text(data.summary.averageChange);
+
+            // Display traffic changes
+            $('#trafficIncreased').text(Math.round(data.summary.trafficChanges.increased).toLocaleString());
+            $('#trafficDecreased').text(Math.round(data.summary.trafficChanges.decreased).toLocaleString());
+
+            // Display total traffic change with color coding
+            const totalTrafficChange = data.summary.trafficChanges.total;
+            $('#totalTrafficChange')
+                .text(Math.round(Math.abs(totalTrafficChange)).toLocaleString())
+                .addClass(totalTrafficChange >= 0 ? 'text-success' : 'text-danger')
+                .prepend(totalTrafficChange >= 0 ? '+' : '-');
+
+            // Create improvements table
+            const improvementsHtml = `
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Old Pos</th>
+                            <th>New Pos</th>
+                            <th>Change</th>
+                            <th>Volume</th>
+                            <th>Traffic %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.topImprovements.map(k => `
+                            <tr>
+                                <td>${k.keyword}</td>
+                                <td>${k.oldPosition === 0 ? 'Not Ranked' : k.oldPosition}</td>
+                                <td>${k.newPosition}</td>
+                                <td class="text-success">↑${Math.abs(k.change)}</td>
+                                <td>${k.searchVolume?.toLocaleString() || '-'}</td>
+                                <td>${k.traffic?.toFixed(2) || '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            $('#topImprovements').html(improvementsHtml);
+
+            // Create drops table
+            const dropsHtml = `
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Old Pos</th>
+                            <th>New Pos</th>
+                            <th>Change</th>
+                            <th>Volume</th>
+                            <th>Traffic %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.biggestDrops.map(k => `
+                            <tr>
+                                <td>${k.keyword}</td>
+                                <td>${k.oldPosition === 0 ? 'Not Ranked' : k.oldPosition}</td>
+                                <td>${k.newPosition === 'Lost' ? '<span class="text-danger">Lost</span>' : k.newPosition}</td>
+                                <td class="text-danger">↓${Math.abs(k.change)}</td>
+                                <td>${k.searchVolume?.toLocaleString() || '-'}</td>
+                                <td>${k.traffic?.toFixed(2) || '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            $('#biggestDrops').html(dropsHtml);
+
+            // Initialize without AI analysis
+            $('#changesInsights').html('Click "Get AI Analysis" for detailed insights');
+
+            if (changesChart) {
+                changesChart.destroy();
+            }
+
+            const ctx = document.getElementById('changesChart').getContext('2d');
+            changesChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Improvements', 'Declines', 'Unchanged'],
+                    datasets: [{
+                        data: [data.improvements, data.declines, data.unchanged],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(201, 203, 207, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(201, 203, 207, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+
+        // Handle AI Analysis buttons
+        $('#getAIAnalysis').click(function() {
+            const button = $(this);
+            button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Analyzing...');
+            
+            $.get('/api/semrush/ai-analysis/position', function(response) {
+                $('#positionInsights').html(response.analysis);
+            })
+            .fail(function() {
+                alert('Error getting AI analysis');
+            })
+            .always(function() {
+                button.prop('disabled', false).text('Get AI Analysis');
+            });
+        });
+
+        $('#getChangesAIAnalysis').click(function() {
+            const button = $(this);
+            button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Analyzing...');
+            
+            $.get('/api/semrush/ai-analysis/changes', function(response) {
+                $('#changesInsights').html(response.analysis);
+            })
+            .fail(function() {
+                alert('Error getting AI analysis');
+            })
+            .always(function() {
+                button.prop('disabled', false).text('Get AI Analysis');
+            });
+        });
+    });
+</script>
+{{/section}} 
