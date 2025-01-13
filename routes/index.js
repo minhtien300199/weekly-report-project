@@ -4,6 +4,7 @@ const categoryLocationController = require('../controllers/categoryLocationContr
 const gscController = require('../controllers/gscController');
 const semrushController = require('../controllers/semrushController');
 const dataForSeoController = require('../controllers/dataForSeoController');
+const ga4Controller = require('../controllers/ga4Controller');
 const multer = require('multer');
 
 // Configure multer for memory storage
@@ -34,5 +35,12 @@ router.post('/api/semrush/position-changes', upload.single('file'), semrushContr
 router.get('/dataforseo-report', dataForSeoController.showReport);
 router.post('/api/dataforseo/serp', dataForSeoController.getSerps);
 router.get('/api/dataforseo/user', dataForSeoController.getUserInfo);
+
+// Google Analytics 4 Routes
+router.get('/ga4-report', ga4Controller.showReport);
+router.get('/api/ga4/users', ga4Controller.getUserData);
+router.get('/api/ga4/acquisition', ga4Controller.getAcquisitionData);
+router.get('/api/ga4/pageviews', ga4Controller.getPageViewsData);
+router.get('/api/ga4/devices', ga4Controller.getDeviceData);
 
 module.exports = router; 

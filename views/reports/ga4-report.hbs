@@ -1,0 +1,620 @@
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title mb-4">Google Analytics 4 Report</h2>
+
+        <div class="row mb-4">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <div class="btn-group" role="group" aria-label="Quick date filters">
+                    <button type="button" class="btn btn-outline-secondary" data-period="week">Last Week</button>
+                    <button type="button" class="btn btn-outline-secondary" data-period="month">Last Month</button>
+                    <button type="button" class="btn btn-outline-secondary" data-period="year">Last Year</button>
+                </div>
+                <div class="input-group" style="max-width: 500px;">
+                    <input type="date" class="form-control" id="startDate">
+                    <input type="date" class="form-control" id="endDate">
+                    <button class="btn btn-primary" id="fetchData">Fetch Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Overview -->
+        <div class="card mb-4" id="usersCard">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        Users Overview
+                        <i class="bi bi-info-circle ms-2" 
+                           data-bs-toggle="tooltip" 
+                           data-bs-placement="right"
+                           data-bs-html="true"
+                           title="<strong>Users vs Sessions:</strong><br>
+                                  • One user can have multiple sessions<br>
+                                  • For example:<br>
+                                  • Same user visits in the morning = 1 session<br>
+                                  • Same user visits in the evening = Another session<br>
+                                  • Result: 1 user but 2 sessions">
+                    </i>
+                    </h5>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="takeScreenshot(this.closest('.card'))">
+                        <i class="bi bi-camera"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card" id="totalUsersCard">
+                            <div class="card-body text-center">
+                                <h6>Total Users</h6>
+                                <h3 id="totalUsers">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card" id="newUsersCard">
+                            <div class="card-body text-center">
+                                <h6>New Users</h6>
+                                <h3 id="newUsers">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card" id="activeUsersCard">
+                            <div class="card-body text-center">
+                                <h6>Active Users</h6>
+                                <h3 id="activeUsers">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Traffic Acquisition -->
+        <div class="card mb-4" id="acquisitionCard">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        Traffic Acquisition
+                        <i class="bi bi-info-circle ms-2" 
+                           data-bs-toggle="tooltip" 
+                           data-bs-placement="right"
+                           data-bs-html="true"
+                           title="<strong>Traffic Acquisition Sessions</strong><br>
+                                  • Counts the total number of sessions/visits<br>
+                                  • One person can visit multiple times through different channels">
+                        </i>
+                    </h5>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="takeScreenshot(this.closest('.card'))">
+                        <i class="bi bi-camera"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <canvas id="acquisitionChart"></canvas>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="table-responsive mt-4 mt-md-0">
+                            <table id="channelSummaryTable" class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Channel</th>
+                                        <th class="text-end">Sessions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="fw-bold">
+                                        <td>Total</td>
+                                        <td class="text-end" id="totalSessions">-</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device Breakdown -->
+        <div class="card mb-4" id="deviceCard">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Device Breakdown</h5>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="takeScreenshot(this.closest('.card').querySelector('.card-body'))">
+                        <i class="bi bi-camera"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="deviceChart"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="table-responsive">
+                            <table id="deviceTable" class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Device Category</th>
+                                        <th class="text-end">Active Users</th>
+                                        <th class="text-end">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Views -->
+        <div class="card" id="pageViewsCard">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Top Pages</h5>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="takeScreenshot(this.closest('.card').querySelector('.card-body'))">
+                        <i class="bi bi-camera"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="pageViewsTable" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Page Title</th>
+                                <th>Page Path</th>
+                                <th>Views</th>
+                                <th>Engagement Rate</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#section 'scripts'}}
+<style>
+    .card {
+        position: relative;
+        overflow: hidden;
+        height: auto !important;
+        min-height: 100px;
+        background: #ffffff;
+    }
+    .card-header {
+        background: #ffffff;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .card-header .btn {
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+    .card-header .btn:hover {
+        opacity: 1;
+    }
+    .card-body {
+        height: auto !important;
+        overflow: hidden !important;
+        background-color: #ffffff;
+    }
+    canvas {
+        max-height: none !important;
+        background-color: #ffffff;
+    }
+    .bi-info-circle {
+        font-size: 0.875rem;
+        color: #6c757d;
+        cursor: help;
+    }
+    .bi-info-circle:hover {
+        color: #495057;
+    }
+    .tooltip-inner {
+        max-width: 300px;
+        text-align: left;
+    }
+    #channelSummaryTable {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    #channelSummaryTable th,
+    #channelSummaryTable td {
+        padding: 0.5rem 1rem;
+    }
+    #channelSummaryTable tfoot {
+        border-top: 2px solid #dee2e6;
+    }
+    @media (max-width: 767.98px) {
+        #channelSummaryTable {
+            max-width: 400px;
+            margin: 1rem auto 0;
+        }
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+<script>
+    // Define takeScreenshot function in global scope
+    async function takeScreenshot(element) {
+        try {
+            // Find the closest card header button
+            const btn = element.querySelector('.card-header .btn');
+            if (btn) btn.style.display = 'none';
+
+            // Wait longer for charts to fully render
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Take screenshot using dom-to-image
+            const dataUrl = await domtoimage.toPng(element, {
+                bgcolor: '#ffffff',
+                height: element.offsetHeight,
+                width: element.offsetWidth,
+                style: {
+                    transform: 'none'
+                }
+            });
+
+            // Show the button again
+            if (btn) btn.style.display = '';
+
+            // Convert dataUrl to blob
+            const res = await fetch(dataUrl);
+            const blob = await res.blob();
+
+            try {
+                // Create ClipboardItem
+                const item = new ClipboardItem({ "image/png": blob });
+                // Copy to clipboard
+                await navigator.clipboard.write([item]);
+                
+                // Show success toast
+                const toastEl = document.createElement('div');
+                toastEl.className = 'toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3';
+                toastEl.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            Screenshot copied to clipboard!
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                `;
+                document.body.appendChild(toastEl);
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+                setTimeout(() => toastEl.remove(), 3000);
+            } catch (error) {
+                console.error('Error copying to clipboard:', error);
+                
+                // If clipboard fails, offer download instead
+                const link = document.createElement('a');
+                link.download = 'screenshot.png';
+                link.href = dataUrl;
+                link.click();
+            }
+        } catch (error) {
+            console.error('Error taking screenshot:', error);
+            alert('Failed to take screenshot');
+            // Make sure button is shown again if there's an error
+            const btn = element.querySelector('.card-header .btn');
+            if (btn) btn.style.display = '';
+        }
+    }
+
+    $(document).ready(function() {
+        let acquisitionChart = null;
+        let deviceChart = null;
+
+        // Initialize tooltips with HTML support
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                html: true,
+                container: 'body'
+            });
+        });
+
+        // Initialize DataTable
+        const pageViewsTable = $('#pageViewsTable').DataTable({
+            pageLength: 25,
+            order: [[2, 'desc']],
+            columns: [
+                { data: 'pageTitle' },
+                { data: 'pagePath' },
+                { data: 'views' },
+                { data: 'duration' }
+            ]
+        });
+
+        // Date range quick filters
+        $('[data-period]').click(function() {
+            const period = $(this).data('period');
+            const dates = getDateRange(period);
+            $('#startDate').val(dates.start);
+            $('#endDate').val(dates.end);
+            $('#fetchData').click();
+        });
+
+        // Fetch data button click
+        $('#fetchData').click(function() {
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+
+            fetchAllData(startDate, endDate);
+        });
+
+        function fetchAllData(startDate, endDate) {
+            Promise.all([
+                $.get(`/api/ga4/users?startDate=${startDate}&endDate=${endDate}`),
+                $.get(`/api/ga4/acquisition?startDate=${startDate}&endDate=${endDate}`),
+                $.get(`/api/ga4/pageviews?startDate=${startDate}&endDate=${endDate}`),
+                $.get(`/api/ga4/devices?startDate=${startDate}&endDate=${endDate}`)
+            ]).then(([usersResponse, acquisitionResponse, pageViewsResponse, deviceResponse]) => {
+                updateUsersData(usersResponse.data);
+                updateAcquisitionChart(acquisitionResponse.data);
+                updatePageViewsTable(pageViewsResponse.data);
+                updateDeviceData(deviceResponse.data);
+            }).catch(error => {
+                console.error('Error fetching data:', error);
+                alert('Error fetching data');
+            });
+        }
+
+        function updateUsersData(data) {
+            // Update cards with single values
+            $('#totalUsers').text(formatNumber(data.rows[0].metricValues[0].value));
+            $('#newUsers').text(formatNumber(data.rows[0].metricValues[1].value));
+            $('#activeUsers').text(formatNumber(data.rows[0].metricValues[2].value));
+        }
+
+        function updateAcquisitionChart(data) {
+            if (acquisitionChart) {
+                acquisitionChart.destroy();
+            }
+
+            // Process the data to combine yearMonth and day into proper dates
+            const processedData = data.rows.map(row => ({
+                date: `${row.dimensionValues[0].value}-${row.dimensionValues[1].value}`,
+                channel: row.dimensionValues[2].value,
+                sessions: parseInt(row.metricValues[0].value)
+            }));
+
+            // Calculate channel totals
+            const channelTotals = processedData.reduce((acc, curr) => {
+                acc[curr.channel] = (acc[curr.channel] || 0) + curr.sessions;
+                return acc;
+            }, {});
+
+            // Sort channels by sessions (descending)
+            const sortedChannels = Object.entries(channelTotals)
+                .sort(([,a], [,b]) => b - a);
+
+            // Update summary table
+            const tableBody = sortedChannels.map(([channel, sessions]) => `
+                <tr>
+                    <td>${channel}</td>
+                    <td class="text-end">${formatNumber(sessions)}</td>
+                </tr>
+            `).join('');
+
+            $('#channelSummaryTable tbody').html(tableBody);
+            $('#totalSessions').text(formatNumber(
+                sortedChannels.reduce((sum, [,sessions]) => sum + sessions, 0)
+            ));
+
+            // Get unique dates and channels
+            const channels = [...new Set(data.rows.map(row => 
+                row.dimensionValues[2].value
+            ))];
+            const dates = [...new Set(processedData.map(item => item.date))].sort();
+            
+            const datasets = channels.map(channel => ({
+                label: channel,
+                borderWidth: 2,
+                tension: 0.4,
+                data: dates.map(date => {
+                    const row = processedData.find(r => 
+                        r.date === date && 
+                        r.channel === channel
+                    );
+                    return row ? row.sessions : 0;
+                })
+            }));
+
+            // Assign colors to channels
+            datasets.forEach((dataset, index) => {
+                const colors = [
+                    'rgb(54, 162, 235)',   // Blue for Direct
+                    'rgb(255, 99, 132)',   // Pink for Email
+                    'rgb(255, 159, 64)',   // Orange for Organic Search
+                    'rgb(255, 205, 86)',   // Yellow for Referral
+                    'rgb(75, 192, 192)',   // Turquoise for Display
+                    'rgb(153, 102, 255)',  // Purple for Organic Social
+                    'rgb(201, 203, 207)'   // Grey for Unassigned
+                ];
+                dataset.borderColor = colors[index];
+                dataset.backgroundColor = colors[index].replace('rgb', 'rgba').replace(')', ', 0.1)');
+            });
+
+            const ctx = document.getElementById('acquisitionChart').getContext('2d');
+            acquisitionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates.map(formatDate),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Sessions'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePageViewsTable(data) {
+            const tableData = data.rows.map(row => ({
+                pageTitle: row.dimensionValues[0].value,
+                pagePath: row.dimensionValues[1].value,
+                views: formatNumber(row.metricValues[0].value),
+                duration: formatPercentage(row.metricValues[1].value)
+            }));
+
+            pageViewsTable.clear().rows.add(tableData).draw();
+        }
+
+        function formatPercentage(value) {
+            return (value * 100).toFixed(2) + '%';
+        }
+
+        // Helper functions
+        function getDateRange(period) {
+            const end = new Date();
+            const start = new Date();
+
+            switch(period) {
+                case 'week':
+                    start.setDate(end.getDate() - 7);
+                    break;
+                case 'month':
+                    start.setDate(end.getDate() - 30);
+                    break;
+                case 'year':
+                    start.setFullYear(end.getFullYear() - 1);
+                    break;
+            }
+
+            return {
+                start: start.toISOString().split('T')[0],
+                end: end.toISOString().split('T')[0]
+            };
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat().format(num);
+        }
+
+        function formatDate(dateStr) {
+            // Input format: YYYYMM-DD
+            const year = dateStr.substring(0, 4);
+            const month = dateStr.substring(4, 6);
+            const day = dateStr.substring(7);
+            const date = new Date(year, month - 1, day);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function formatDuration(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            return `${minutes}m ${Math.round(seconds % 60)}s`;
+        }
+
+        // Load last 30 days by default
+        $('[data-period="month"]').click();
+
+        function updateDeviceData(data) {
+            if (deviceChart) {
+                deviceChart.destroy();
+            }
+
+            const total = data.rows.reduce((sum, row) => 
+                sum + parseInt(row.metricValues[0].value), 0
+            );
+
+            const deviceData = data.rows.map(row => ({
+                device: row.dimensionValues[0].value,
+                users: parseInt(row.metricValues[0].value),
+                percentage: (parseInt(row.metricValues[0].value) / total * 100).toFixed(1)
+            }));
+
+            // Update table
+            const tableBody = deviceData.map(item => `
+                <tr>
+                    <td>${item.device}</td>
+                    <td class="text-end">${formatNumber(item.users)}</td>
+                    <td class="text-end">${item.percentage}%</td>
+                </tr>
+            `).join('');
+            $('#deviceTable tbody').html(tableBody);
+
+            // Create doughnut chart
+            const ctx = document.getElementById('deviceChart').getContext('2d');
+            deviceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: deviceData.map(item => item.device),
+                    datasets: [{
+                        data: deviceData.map(item => item.users),
+                        backgroundColor: [
+                            'rgb(54, 162, 235)',   // Desktop
+                            'rgb(255, 99, 132)',   // Mobile
+                            'rgb(255, 205, 86)'    // Tablet
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const percentage = (value / total * 100).toFixed(1);
+                                    return `${context.label}: ${formatNumber(value)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{{/section}} 
