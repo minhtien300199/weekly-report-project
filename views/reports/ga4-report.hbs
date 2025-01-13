@@ -124,7 +124,7 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Device Breakdown</h5>
-                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="takeScreenshot(this.closest('.card').querySelector('.card-body'))">
+                    <button class="btn btn-sm btn-outline-secondary" type="button" onclick="takeScreenshot(this.closest('.card'))">
                         <i class="bi bi-camera"></i>
                     </button>
                 </div>
@@ -132,7 +132,9 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <canvas id="deviceChart"></canvas>
+                        <div style="max-width: 400px; margin: 0 auto;">
+                            <canvas id="deviceChart"></canvas>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="table-responsive">
@@ -324,7 +326,7 @@
 
         // Initialize DataTable
         const pageViewsTable = $('#pageViewsTable').DataTable({
-            pageLength: 25,
+            pageLength: 10,
             order: [[2, 'desc']],
             columns: [
                 { data: 'pageTitle' },
@@ -598,6 +600,8 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.5,
                     plugins: {
                         legend: {
                             position: 'bottom'
