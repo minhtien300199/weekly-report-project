@@ -88,7 +88,16 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Period Analysis</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Period Analysis</h5>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    onclick="copyAnalysisToClipboard('periodAnalysis')"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="left"
+                                    title="Copy analysis to clipboard">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -125,9 +134,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Compare Impression Report</h5>
-                        </div>
+                        <h5 class="mb-0">Compare Impression Report</h5>
                     </div>
                     <div class="card-body">
                         <div class="row mb-3">
@@ -220,6 +227,7 @@
 
 {{#section 'scripts'}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 <style>
     /* Custom styles for tables */
     .table {
@@ -335,6 +343,136 @@
     }
 </style>
 <script>
+    function copyAnalysisToClipboard(elementId) {
+        const analysisElement = document.getElementById(elementId);
+        const items = analysisElement.querySelectorAll('li');
+        
+        // Convert analysis data to formatted text
+        let text = 'Period Analysis:\n\n';
+        items.forEach(item => {
+            // Get the label (everything before the colon)
+            const label = item.textContent.split(':')[0];
+            // Get all spans within the item
+            const values = Array.from(item.querySelectorAll('span'))
+                .map(span => span.textContent.trim())
+                .join(' ');
+            text += `${label}: ${values}\n`;
+        });
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Analysis copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy analysis:', err);
+            alert('Failed to copy analysis to clipboard');
+        });
+    }
+
+    async function takeScreenshot(element) {
+        try {
+            // Store all buttons in the card to hide them during screenshot
+            const parentCard = element.closest('.card');
+            const buttons = parentCard ? Array.from(parentCard.querySelectorAll('button')) : [];
+            
+            // Hide all buttons
+            buttons.forEach(btn => {
+                if (btn) {
+                    btn._originalDisplay = btn.style.display;
+                    btn.style.display = 'none';
+                }
+            });
+
+            // First capture the chart canvas if it exists
+            let chartCanvas = element.querySelector('canvas');
+            let chartImageUrl;
+            if (chartCanvas) {
+                chartImageUrl = chartCanvas.toDataURL('image/png');
+                // Create temporary image to replace canvas
+                const img = document.createElement('img');
+                img.src = chartImageUrl;
+                img.style.width = '100%';
+                img.style.height = 'auto';
+                chartCanvas.parentNode.insertBefore(img, chartCanvas);
+                chartCanvas.style.display = 'none';
+            }
+
+            // Wait for everything to render
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Take screenshot using dom-to-image
+            const dataUrl = await domtoimage.toPng(element, {
+                backgroundColor: '#ffffff',
+                style: {
+                    transform: 'none'
+                },
+                filter: function(node) {
+                    // Skip any hidden elements
+                    return node.style.display !== 'none';
+                }
+            });
+
+            // Restore original chart canvas
+            if (chartCanvas) {
+                chartCanvas.style.display = '';
+                chartCanvas.previousSibling.remove();
+            }
+
+            // Restore all buttons
+            buttons.forEach(btn => {
+                if (btn) {
+                    btn.style.display = btn._originalDisplay || '';
+                    delete btn._originalDisplay;
+                }
+            });
+
+            // Ensure the dataUrl is valid
+            if (!dataUrl || dataUrl.length < 100) {
+                throw new Error('Invalid screenshot data');
+            }
+
+            // Convert dataUrl to blob
+            const res = await fetch(dataUrl);
+            const blob = await res.blob();
+
+            try {
+                // Validate blob
+                if (!blob || blob.size === 0) {
+                    throw new Error('Invalid blob data');
+                }
+
+                const item = new ClipboardItem({ "image/png": blob });
+                await navigator.clipboard.write([item]);
+                showToast('Screenshot copied to clipboard!');
+            } catch (error) {
+                console.error('Error copying to clipboard:', error);
+                // Fallback to download
+                try {
+                    const link = document.createElement('a');
+                    link.download = 'screenshot.png';
+                    link.href = dataUrl;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } catch (downloadError) {
+                    console.error('Failed to download:', downloadError);
+                    alert('Failed to save screenshot');
+                }
+            }
+        } catch (error) {
+            console.error('Error taking screenshot:', error.message || error);
+            alert('Failed to take screenshot. Please try again.');
+            // Restore all buttons in case of error
+            const parentCard = element.closest('.card');
+            const buttons = parentCard ? Array.from(parentCard.querySelectorAll('button')) : [];
+            buttons.forEach(btn => {
+                if (btn) {
+                    btn.style.display = btn._originalDisplay || '';
+                    delete btn._originalDisplay;
+                }
+            });
+        }
+    }
+
     function copyTableToClipboard(tableId) {
         const table = document.getElementById(tableId);
         const rows = table.querySelectorAll('tr');
