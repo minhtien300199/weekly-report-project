@@ -4,15 +4,8 @@ class CategoryLocationController {
     async showReport(req, res) {
         try {
             res.render('reports/category-location');
-
-            // Log the report access using read-write connection
-            const logger = new LoggingService();
-            await logger.logActivity('report_access', {
-                report: 'category-location',
-                user: req.user?.id || 'anonymous'
-            });
         } catch (error) {
-            console.error('Error showing report:', error);
+            console.error('Error showing category location report:', error);
             res.status(500).render('error', { error: 'Failed to load report' });
         }
     }

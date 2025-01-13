@@ -6,12 +6,6 @@ class GSCController {
     async showReport(req, res) {
         try {
             res.render('reports/gsc-report');
-
-            const logger = new LoggingService();
-            await logger.logActivity('report_access', {
-                report: 'gsc-report',
-                user: req.user?.id || 'anonymous'
-            });
         } catch (error) {
             console.error('Error showing GSC report:', error);
             res.status(500).render('error', { error: 'Failed to load GSC report' });

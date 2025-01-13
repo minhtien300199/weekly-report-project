@@ -7,15 +7,9 @@ class SemrushController {
     async showReport(req, res) {
         try {
             res.render('reports/semrush-report');
-
-            const logger = new LoggingService();
-            await logger.logActivity('report_access', {
-                report: 'semrush-report',
-                user: req.user?.id || 'anonymous'
-            });
         } catch (error) {
             console.error('Error showing Semrush report:', error);
-            res.status(500).render('error', { error: 'Failed to load Semrush report' });
+            res.status(500).render('error', { error: 'Failed to load report' });
         }
     }
 

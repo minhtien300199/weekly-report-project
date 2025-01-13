@@ -15,8 +15,12 @@ const multer = require('multer');
 const routes = require('./routes');
 const exphbs = require('express-handlebars');
 const { sequelize } = require('./models');
+const cookieParser = require('cookie-parser');
 
 const app = express();
+
+// Add cookie parser
+app.use(cookieParser());
 
 // Configure multer for file uploads
 const upload = multer({

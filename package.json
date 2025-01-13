@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node app.js",
         "dev": "nodemon app.js",
-        "migrate": "node -r dotenv/config migrations/create-activity-logs.js"
+        "migrate": "node -r dotenv/config migrations/runner.js"
     },
     "dependencies": {
         "@google/generative-ai": "^0.21.0",
@@ -21,7 +21,10 @@
         "mysql2": "^3.6.5",
         "sequelize": "^6.37.5",
         "xlsx": "^0.18.5",
-        "axios": "^1.6.7"
+        "axios": "^1.6.7",
+        "bcryptjs": "^2.4.3",
+        "cookie-parser": "^1.4.6",
+        "jsonwebtoken": "^9.0.0"
     },
     "devDependencies": {
         "nodemon": "^3.1.9"

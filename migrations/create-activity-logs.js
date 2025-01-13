@@ -17,6 +17,7 @@ async function createActivityLogsTable() {
             CREATE TABLE IF NOT EXISTS activity_logs (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 action VARCHAR(255) NOT NULL,
+                username VARCHAR(255) NOT NULL,
                 details TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

@@ -1,23 +1,21 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
+const bcrypt = require('bcryptjs');
 
-const ActivityLog = sequelize.define('ActivityLog', {
+const User = sequelize.define('User', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    action: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     username: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
-    details: {
-        type: DataTypes.TEXT,
-        allowNull: true
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     created_at: {
         type: DataTypes.DATE,
@@ -28,10 +26,10 @@ const ActivityLog = sequelize.define('ActivityLog', {
         defaultValue: DataTypes.NOW
     }
 }, {
-    tableName: 'activity_logs',
+    tableName: 'users',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
 
-module.exports = ActivityLog; 
+module.exports = User; 
