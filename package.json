@@ -6,7 +6,11 @@
     "scripts": {
         "start": "node app.js",
         "dev": "nodemon app.js",
-        "migrate": "node -r dotenv/config migrations/runner.js"
+        "migrate": "node -r dotenv/config migrations/runner.js",
+        "docker:build": "docker-compose build",
+        "docker:up": "docker-compose up -d",
+        "docker:down": "docker-compose down",
+        "docker:logs": "docker-compose logs -f"
     },
     "dependencies": {
         "@google/generative-ai": "^0.21.0",
