@@ -9,6 +9,7 @@ const multer = require('multer');
 const { auth, redirectIfAuthenticated } = require('../middleware/auth');
 const authController = require('../controllers/authController');
 const activityLogger = require('../middleware/logging');
+const adminController = require('../controllers/adminController');
 
 // Configure multer for memory storage
 const upload = multer({
@@ -67,6 +68,16 @@ router.get('/api/ga4/users', auth, ga4Controller.getUserData);
 router.get('/api/ga4/acquisition', auth, ga4Controller.getAcquisitionData);
 router.get('/api/ga4/pageviews', auth, ga4Controller.getPageViewsData);
 router.get('/api/ga4/devices', auth, ga4Controller.getDeviceData);
+
+// Admin routes
+router.get('/admin/users',
+    auth,
+    activityLogger('admin_access', { section: 'user_management' }),
+    adminController.showUsers
+);
+router.post('/admin/users', auth, adminController.createUser);
+router.put('/admin/users/:id', auth, adminController.updateUser);
+router.delete('/admin/users/:id', auth, adminController.deleteUser);
 
 // Auth routes
 router.get('/login', redirectIfAuthenticated, authController.showLogin);

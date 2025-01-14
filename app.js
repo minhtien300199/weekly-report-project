@@ -51,6 +51,19 @@ const hbs = exphbs.create({
         },
         eq: function (v1, v2) {
             return v1 === v2;
+        },
+        not: function (value) {
+            return !value;
+        },
+        formatDate: function (date) {
+            if (!date) return '';
+            return new Date(date).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         }
     }
 });
