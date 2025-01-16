@@ -84,4 +84,9 @@ router.get('/login', redirectIfAuthenticated, authController.showLogin);
 router.post('/auth/login', authController.login);
 router.get('/logout', authController.logout);
 
+// Topical Map route
+router.get('/topical-map', auth, (req, res) => {
+    res.render('tools/topical-map');
+});
+
 module.exports = router; 
