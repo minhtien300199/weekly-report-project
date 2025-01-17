@@ -19,6 +19,30 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 
+// Trust proxy if behind a reverse proxy
+app.set('trust proxy', 1);
+
+// Configure CORS with credentials
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+            'http://192.168.1.71:19555',
+            'http://192.168.1.71',
+            'http://localhost:19555',
+            'http://localhost'
+        ];
+
+        if (allowedOrigins.indexOf(origin) === -1) {
+            return callback(new Error('CORS policy violation'), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true
+}));
+
 // Add cookie parser
 app.use(cookieParser());
 
@@ -28,9 +52,6 @@ const upload = multer({
         fileSize: 50 * 1024 * 1024 // 50MB limit
     }
 });
-
-// Enable CORS
-app.use(cors());
 
 // Enable JSON parsing
 app.use(express.json({ limit: '50mb' }));

@@ -33,11 +33,21 @@ class AuthController {
             const cookieOptions = {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                maxAge: remember ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000 // 7 days if remember, else 24 hours
+                maxAge: remember ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // 7 days if remember, else 24 hours
+                sameSite: 'lax',
+                path: '/',
+                domain: req.hostname,  // This will include the port
+                // You can also explicitly set the domain if needed:
+                // domain: '192.168.1.71'
             };
 
-            res.cookie('token', token, cookieOptions);
+            console.log('Setting cookie with options:', {
+                ...cookieOptions,
+                hostname: req.hostname,
+                originalUrl: req.originalUrl
+            });
 
+            res.cookie('token', token, cookieOptions);
             console.log('Login successful for user:', username);
             res.json({ success: true });
         } catch (error) {
@@ -47,7 +57,11 @@ class AuthController {
     }
 
     logout(req, res) {
-        res.clearCookie('token');
+        res.clearCookie('token', {
+            path: '/',
+            domain: req.hostname,
+            // domain: '192.168.1.71' // If explicit domain is needed
+        });
         res.redirect('/login');
     }
 }
