@@ -103,5 +103,17 @@
     
     <!-- Place for page-specific scripts -->
     {{{_sections.scripts}}}
+
+    <script>
+        // Handle logout
+        $('#logoutLink').click(function(e) {
+            e.preventDefault();
+            // Make a GET request to the logout endpoint
+            $.get('/logout')
+                .always(function() {
+                    window.location.href = '/login';
+                });
+        });
+    </script>
 </body>
 </html> 

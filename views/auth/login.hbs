@@ -11,7 +11,16 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <span class="input-group-text" id="togglePassword">
+                                    <i class="bi bi-eye"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
                         </div>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">Login</button>
@@ -26,12 +35,32 @@
 {{#section 'scripts'}}
 <script>
     $(document).ready(function() {
+        // Check if there's a remembered username
+        const rememberedUsername = localStorage.getItem('rememberedUsername');
+        if (rememberedUsername) {
+            $('#username').val(rememberedUsername);
+            $('#rememberMe').prop('checked', true);
+        }
+
+        // Toggle password visibility
+        $('#togglePassword').click(function() {
+            const passwordInput = $('#password');
+            const icon = $(this).find('i');
+            
+            const isPassword = passwordInput.attr('type') === 'password';
+            passwordInput.attr('type', isPassword ? 'text' : 'password');
+            icon
+                .removeClass(isPassword ? 'bi-eye' : 'bi-eye-slash')
+                .addClass(isPassword ? 'bi-eye-slash' : 'bi-eye');
+        });
+
         $('#loginForm').on('submit', function(e) {
             e.preventDefault();
             
             const formData = {
                 username: $('#username').val(),
-                password: $('#password').val()
+                password: $('#password').val(),
+                remember: $('#rememberMe').is(':checked')
             };
 
             $.ajax({
@@ -41,6 +70,13 @@
                 contentType: 'application/json',
                 success: function(response) {
                     if (response.success) {
+                        // Handle remember me
+                        if ($('#rememberMe').is(':checked')) {
+                            localStorage.setItem('rememberedUsername', formData.username);
+                        } else {
+                            localStorage.removeItem('rememberedUsername');
+                        }
+
                         window.location.href = '/';
                     }
                 },
@@ -48,6 +84,13 @@
                     alert(xhr.responseJSON?.error || 'Login failed');
                 }
             });
+        });
+
+        // Clear remembered username when logging out
+        $('#logoutLink').click(function() {
+            if (!$('#rememberMe').is(':checked')) {
+                localStorage.removeItem('rememberedUsername');
+            }
         });
     });
 </script>

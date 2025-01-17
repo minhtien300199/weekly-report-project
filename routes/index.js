@@ -19,12 +19,24 @@ const upload = multer({
     }
 });
 
-router.get('/', auth, (req, res) => {
+// Split routes into authenticated and non-authenticated
+// Non-authenticated routes (login related)
+const authRoutes = express.Router();
+authRoutes.get('/login', redirectIfAuthenticated, authController.showLogin);
+authRoutes.post('/auth/login', authController.login);
+authRoutes.get('/logout', authController.logout);
+
+// Add auth routes before the auth middleware
+router.use('/', authRoutes);
+
+// Apply auth middleware to all routes below this line
+router.use(auth);
+
+router.get('/', (req, res) => {
     res.render('home');
 });
 
 router.get('/category-location-report',
-    auth,
     activityLogger('report_access', { report: 'category-location' }),
     categoryLocationController.showReport
 );
@@ -32,7 +44,6 @@ router.get('/api/location-category-data', auth, categoryLocationController.getRe
 
 // GSC Routes
 router.get('/gsc-report',
-    auth,
     activityLogger('report_access', { report: 'gsc-report' }),
     gscController.showReport
 );
@@ -40,7 +51,6 @@ router.get('/api/gsc-data', auth, gscController.getGSCData);
 
 // Semrush Routes
 router.get('/semrush-report',
-    auth,
     activityLogger('report_access', { report: 'semrush-report' }),
     semrushController.showReport
 );
@@ -71,18 +81,12 @@ router.get('/api/ga4/devices', auth, ga4Controller.getDeviceData);
 
 // Admin routes
 router.get('/admin/users',
-    auth,
     activityLogger('admin_access', { section: 'user_management' }),
     adminController.showUsers
 );
 router.post('/admin/users', auth, adminController.createUser);
 router.put('/admin/users/:id', auth, adminController.updateUser);
 router.delete('/admin/users/:id', auth, adminController.deleteUser);
-
-// Auth routes
-router.get('/login', redirectIfAuthenticated, authController.showLogin);
-router.post('/auth/login', authController.login);
-router.get('/logout', authController.logout);
 
 // Topical Map route
 router.get('/topical-map', auth, (req, res) => {
