@@ -31,11 +31,25 @@ app.use(cors({
         const allowedOrigins = [
             'http://192.168.1.71:19555',
             'http://192.168.1.71',
+            'http://192.168.1.71:*', // Allow any port
             'http://localhost:19555',
-            'http://localhost'
+            'http://localhost',
+            'http://localhost:*', // Allow any port
+            'http://127.0.0.1:3000',
+            'http://127.0.0.1:*' // Allow any port on 127.0.0.1
         ];
 
-        if (allowedOrigins.indexOf(origin) === -1) {
+        // Check if origin matches any of the allowed patterns
+        const isAllowed = allowedOrigins.some(allowed => {
+            if (allowed.endsWith(':*')) {
+                // For wildcard ports, check the domain part
+                const allowedDomain = allowed.slice(0, -2); // Remove :*
+                return origin.startsWith(allowedDomain);
+            }
+            return origin === allowed;
+        });
+
+        if (!isAllowed) {
             return callback(new Error('CORS policy violation'), false);
         }
         return callback(null, true);
