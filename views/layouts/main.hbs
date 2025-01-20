@@ -46,6 +46,10 @@
                            href="/topical-map">Topical Map</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{#if (eq currentRoute '/seo-tools')}}active{{/if}}" 
+                           href="/seo-tools">SEO Tools</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{#if (eq currentRoute '/category-location-report')}}active{{/if}}" 
                            href="/category-location-report">Category Location Report</a>
                     </li>
@@ -100,6 +104,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     
     <!-- Place for page-specific scripts -->
     {{{_sections.scripts}}}

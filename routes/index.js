@@ -93,4 +93,9 @@ router.get('/topical-map', auth, (req, res) => {
     res.render('tools/topical-map');
 });
 
+// SEO Tools route
+router.get('/seo-tools', auth, (req, res) => {
+    res.render('tools/seo-tools');
+});
+
 module.exports = router; 
