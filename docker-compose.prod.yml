@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weekly-report-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_RW_HOST=db
+      - DB_RW_USER=${DB_RW_USER}
+      - DB_RW_PASSWORD=${DB_RW_PASSWORD}
+      - DB_RW_DATABASE=${DB_RW_DATABASE}
+      - DB_RO_HOST=${DB_RO_HOST}
+      - DB_RO_USER=${DB_RO_USER}
+      - DB_RO_PASSWORD=${DB_RO_PASSWORD}
+      - DB_RO_DATABASE=${DB_RO_DATABASE}
+      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_SEARCH_API_KEY=${GOOGLE_SEARCH_API_KEY}
+      - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID}
+    volumes:
+      - app_logs:/usr/src/app/logs
+    depends_on:
+      - db
+    networks:
+      - app_network
+
+  db:
+    image: mysql:8.0
+    container_name: weekly-report-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_RW_PASSWORD}
+      - MYSQL_DATABASE=${DB_RW_DATABASE}
+      - MYSQL_USER=${DB_RW_USER}
+      - MYSQL_PASSWORD=${DB_RW_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: weekly-report-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - app
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+  app_logs:
+
+networks:
+  app_network:
+    driver: bridge
