@@ -10,6 +10,7 @@ const { auth, redirectIfAuthenticated } = require('../middleware/auth');
 const authController = require('../controllers/authController');
 const activityLogger = require('../middleware/logging');
 const adminController = require('../controllers/adminController');
+const googleSearchController = require('../controllers/googleSearchController');
 
 // Configure multer for memory storage
 const upload = multer({
@@ -97,5 +98,9 @@ router.get('/topical-map', auth, (req, res) => {
 router.get('/seo-tools', auth, (req, res) => {
     res.render('tools/seo-tools');
 });
+
+// Google Search Tool route
+router.get('/tools/google-search', auth, googleSearchController.showSearchTool);
+router.post('/api/google-search', auth, googleSearchController.search);
 
 module.exports = router; 

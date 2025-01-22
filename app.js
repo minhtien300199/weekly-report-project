@@ -16,6 +16,7 @@ const routes = require('./routes');
 const exphbs = require('express-handlebars');
 const { sequelize } = require('./models');
 const cookieParser = require('cookie-parser');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -115,6 +116,9 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/', routes);
+
+// Error handler (should be after routes)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

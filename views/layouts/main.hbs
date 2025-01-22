@@ -49,6 +49,24 @@
                         <a class="nav-link {{#if (eq currentRoute '/seo-tools')}}active{{/if}}" 
                            href="/seo-tools">SEO Tools</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{#if (eq currentRoute '/tools/google-search')}}active{{/if}}" 
+                           href="#" 
+                           role="button" 
+                           data-bs-toggle="dropdown" 
+                           aria-expanded="false">
+                            Search Tools
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item {{#if (eq currentRoute '/tools/google-search')}}active{{/if}}" 
+                                   href="/tools/google-search">
+                                    <i class="bi bi-google"></i> Google Search
+                                </a>
+                            </li>
+                            <!-- Add more search tools here in the future -->
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link {{#if (eq currentRoute '/category-location-report')}}active{{/if}}" 
                            href="/category-location-report">Category Location Report</a>
