@@ -1,5 +1,4 @@
 const GSCService = require('../services/gscService');
-const GeminiService = require('../services/geminiService');
 const { LoggingService } = require('../services/categoryLocationService');
 
 class GSCController {
@@ -16,34 +15,34 @@ class GSCController {
         try {
             const { startDate, endDate, type } = req.query;
             const gscService = new GSCService();
-            const geminiService = new GeminiService();
 
             let data;
-            let aiInsights;
+            let totalMetrics;
 
             if (type === 'keywords') {
                 data = await gscService.getTopKeywords(startDate, endDate);
+                // Also get total metrics for the period
+                totalMetrics = await gscService.getTotalMetrics(startDate, endDate);
             } else if (type === 'pages') {
                 data = await gscService.getTopPages(startDate, endDate);
+                // Also get total metrics for the period if not already fetched
+                if (!totalMetrics) {
+                    totalMetrics = await gscService.getTotalMetrics(startDate, endDate);
+                }
             } else if (type === 'comparison') {
                 data = await gscService.getComparisonData(startDate, endDate);
-                // Get AI insights for comparison data
-                aiInsights = await geminiService.analyzeGSCData({
-                    totalImpressions: data.reduce((sum, d) => sum + d.impressions, 0),
-                    totalClicks: data.reduce((sum, d) => sum + d.clicks, 0),
-                    avgPosition: data.reduce((sum, d) => sum + d.position, 0) / data.length,
-                    avgCTR: (data.reduce((sum, d) => sum + d.clicks, 0) / data.reduce((sum, d) => sum + d.impressions, 0)) * 100,
-                    maxImpressions: Math.max(...data.map(d => d.impressions)),
-                    minImpressions: Math.min(...data.map(d => d.impressions)),
-                    maxClicks: Math.max(...data.map(d => d.clicks)),
-                    minClicks: Math.min(...data.map(d => d.clicks))
-                });
+                // Also get total metrics for the comparison period
+                totalMetrics = await gscService.getTotalMetrics(startDate, endDate);
+            } else if (type === 'totalMetrics') {
+                // Get only total metrics for the period
+                totalMetrics = await gscService.getTotalMetrics(startDate, endDate);
+                data = [];
             }
 
             res.json({
                 success: true,
                 data,
-                aiInsights
+                totalMetrics
             });
         } catch (error) {
             console.error('Error fetching GSC data:', error);
@@ -53,6 +52,24 @@ class GSCController {
             });
         }
     }
+
+    async getTotalMetrics(req, res) {
+        try {
+            const { startDate, endDate } = req.query;
+            const gscService = new GSCService();
+            const totalMetrics = await gscService.getTotalMetrics(startDate, endDate);
+            res.json({
+                success: true,
+                totalMetrics
+            });
+        } catch (error) {
+            console.error('Error fetching total metrics:', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    }
 }
 
-module.exports = new GSCController(); 
+module.exports = new GSCController();

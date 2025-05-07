@@ -7,6 +7,78 @@ class AuthController {
         res.render('auth/login', { layout: 'auth' });
     }
 
+    showRegister(req, res) {
+        res.render('auth/register', { layout: 'auth' });
+    }
+
+    async register(req, res) {
+        try {
+            console.log('Registration attempt for username:', req.body.username);
+            const { username, password, confirmPassword } = req.body;
+
+            // Validate input
+            if (!username || !password || !confirmPassword) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'All fields are required'
+                });
+            }
+
+            if (password !== confirmPassword) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Passwords do not match'
+                });
+            }
+
+            // Check if username already exists
+            const existingUser = await User.findOne({ where: { username } });
+            if (existingUser) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Username already exists'
+                });
+            }
+
+            // Hash password
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            // Create new user
+            const newUser = await User.create({
+                username,
+                password: hashedPassword
+            });
+
+            // Generate JWT token
+            const token = jwt.sign(
+                { id: newUser.id, username: newUser.username },
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+
+            // Set cookie
+            const cookieOptions = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                sameSite: 'lax',
+                path: '/',
+                domain: req.hostname,
+            };
+
+            res.cookie('token', token, cookieOptions);
+            console.log('Registration successful for user:', username);
+            res.json({ success: true });
+        } catch (error) {
+            console.error('Registration error:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Registration failed'
+            });
+        }
+    }
+
     async login(req, res) {
         try {
             console.log('Login attempt for username:', req.body.username);

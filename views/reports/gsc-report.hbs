@@ -711,8 +711,11 @@
                     keywordsTable.clear().rows.add(keywordsResponse.data).draw();
                     pagesTable.clear().rows.add(pagesResponse.data).draw();
                     
-                    // Analyze the data
-                    analyzeTopData(keywordsResponse.data, pagesResponse.data);
+                    // Get the totalMetrics from the response
+                    const totalMetrics = keywordsResponse.totalMetrics || pagesResponse.totalMetrics;
+                    
+                    // Analyze the data with total metrics
+                    analyzeTopData(keywordsResponse.data, pagesResponse.data, totalMetrics);
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -725,24 +728,26 @@
                 });
         });
 
-        // Function to analyze top data
-        function analyzeTopData(keywords, pages) {
-            // Combine all data for overall analysis
+        // Function to analyze top data with totalMetrics from API
+        function analyzeTopData(keywords, pages, totalMetrics) {
+            // Combine all data for keyword and page analysis
             const allData = [...keywords, ...pages];
             
             // Get current date range for reference
             const startDate = $('#startDate').val();
             const endDate = $('#endDate').val();
             
-            // Calculate metrics
+            // Calculate metrics from top items
             const maxImp = allData.reduce((max, curr) => curr.impressions > max.impressions ? curr : max, allData[0]);
             const minImp = allData.reduce((min, curr) => curr.impressions < min.impressions ? curr : min, allData[0]);
             const maxClick = allData.reduce((max, curr) => curr.clicks > max.clicks ? curr : max, allData[0]);
             const minClick = allData.reduce((min, curr) => curr.clicks < min.clicks ? curr : min, allData[0]);
-            const totalImp = allData.reduce((sum, curr) => sum + curr.impressions, 0);
-            const totalClick = allData.reduce((sum, curr) => sum + curr.clicks, 0);
-            const avgPosition = allData.reduce((sum, curr) => sum + curr.position, 0) / allData.length;
-            const avgCTR = (totalClick / totalImp) * 100;
+            
+            // Use the total metrics from the API for accurate totals
+            const totalImp = totalMetrics ? totalMetrics.impressions : 0;
+            const totalClick = totalMetrics ? totalMetrics.clicks : 0;
+            const avgPosition = totalMetrics ? totalMetrics.position : 0;
+            const avgCTR = totalMetrics ? totalMetrics.ctr * 100 : 0;
             
             // Calculate daily averages
             const days = Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1;

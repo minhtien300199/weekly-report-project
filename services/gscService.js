@@ -12,6 +12,37 @@ class GSCService {
         this.searchConsole = google.searchconsole('v1');
     }
 
+    async getTotalMetrics(startDate, endDate) {
+        try {
+            const response = await this.searchConsole.searchanalytics.query({
+                siteUrl: process.env.GSC_SITE_URL,
+                auth: this.auth,
+                requestBody: {
+                    startDate,
+                    endDate,
+                    // No dimensions means we get totals for the entire period
+                    dimensions: []
+                }
+            });
+            
+            // If there's data, return the first row which contains totals
+            if (response.data.rows && response.data.rows.length > 0) {
+                return response.data.rows[0];
+            }
+            
+            // Return default values if no data
+            return {
+                clicks: 0,
+                impressions: 0,
+                ctr: 0,
+                position: 0
+            };
+        } catch (error) {
+            console.error('Error fetching total metrics:', error);
+            throw error;
+        }
+    }
+
     async getTopKeywords(startDate, endDate, limit = 10) {
         try {
             const response = await this.searchConsole.searchanalytics.query({

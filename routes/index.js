@@ -26,6 +26,8 @@ const authRoutes = express.Router();
 authRoutes.get('/login', redirectIfAuthenticated, authController.showLogin);
 authRoutes.post('/auth/login', authController.login);
 authRoutes.get('/logout', authController.logout);
+authRoutes.get('/register', redirectIfAuthenticated, authController.showRegister);
+authRoutes.post('/auth/register', authController.register);
 
 // Add auth routes before the auth middleware
 router.use('/', authRoutes);

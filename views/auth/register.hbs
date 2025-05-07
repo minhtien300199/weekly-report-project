@@ -3,8 +3,8 @@
         <div class="col-md-6 col-lg-4">
             <div class="card">
                 <div class="card-body">
-                    <h3 class="card-title text-center mb-4">Login</h3>
-                    <form id="loginForm">
+                    <h3 class="card-title text-center mb-4">Register Account</h3>
+                    <form id="registerForm">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" name="username" required>
@@ -13,18 +13,23 @@
                             <label for="password" class="form-label">Password</label>
                             <div class="input-group">
                                 <input type="password" class="form-control" id="password" name="password" required>
-                                <span class="input-group-text" id="togglePassword">
+                                <span class="input-group-text toggle-password" data-target="password">
                                     <i class="bi bi-eye"></i>
                                 </span>
                             </div>
                         </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="rememberMe">
-                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                <span class="input-group-text toggle-password" data-target="confirmPassword">
+                                    <i class="bi bi-eye"></i>
+                                </span>
+                            </div>
                         </div>
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Login</button>
-                            <a href="/register" class="btn btn-outline-secondary">Create an account</a>
+                            <button type="submit" class="btn btn-primary">Register</button>
+                            <a href="/login" class="btn btn-outline-secondary">Already have an account? Login</a>
                         </div>
                     </form>
                 </div>
@@ -36,16 +41,10 @@
 {{#section 'scripts'}}
 <script>
     $(document).ready(function() {
-        // Check if there's a remembered username
-        const rememberedUsername = localStorage.getItem('rememberedUsername');
-        if (rememberedUsername) {
-            $('#username').val(rememberedUsername);
-            $('#rememberMe').prop('checked', true);
-        }
-
         // Toggle password visibility
-        $('#togglePassword').click(function() {
-            const passwordInput = $('#password');
+        $('.toggle-password').click(function() {
+            const targetId = $(this).data('target');
+            const passwordInput = $('#' + targetId);
             const icon = $(this).find('i');
             
             const isPassword = passwordInput.attr('type') === 'password';
@@ -55,43 +54,36 @@
                 .addClass(isPassword ? 'bi-eye-slash' : 'bi-eye');
         });
 
-        $('#loginForm').on('submit', function(e) {
+        // Form submission
+        $('#registerForm').on('submit', function(e) {
             e.preventDefault();
             
             const formData = {
                 username: $('#username').val(),
                 password: $('#password').val(),
-                remember: $('#rememberMe').is(':checked')
+                confirmPassword: $('#confirmPassword').val()
             };
 
+            // Validate passwords match
+            if (formData.password !== formData.confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
             $.ajax({
-                url: '/auth/login',
+                url: '/auth/register',
                 method: 'POST',
                 data: JSON.stringify(formData),
                 contentType: 'application/json',
                 success: function(response) {
                     if (response.success) {
-                        // Handle remember me
-                        if ($('#rememberMe').is(':checked')) {
-                            localStorage.setItem('rememberedUsername', formData.username);
-                        } else {
-                            localStorage.removeItem('rememberedUsername');
-                        }
-
                         window.location.href = '/';
                     }
                 },
                 error: function(xhr) {
-                    alert(xhr.responseJSON?.error || 'Login failed');
+                    alert(xhr.responseJSON?.error || 'Registration failed');
                 }
             });
-        });
-
-        // Clear remembered username when logging out
-        $('#logoutLink').click(function() {
-            if (!$('#rememberMe').is(':checked')) {
-                localStorage.removeItem('rememberedUsername');
-            }
         });
     });
 </script>
